@@ -1,0 +1,159 @@
+/* ---- Google Fonts Import ---- */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* L&T Brand Palette */
+  --color-brand-yellow: #fec00f;
+  --color-brand-yellow-hover: #e5ab0d;
+  --color-brand-yellow-dark: #c49000;
+
+  --color-lt-dark: #07111f;
+  --color-lt-navy: #0a1a2e;
+  --color-lt-blue: #003057;
+  --color-lt-blue-mid: #00447a;
+  --color-lt-blue-light: #0066bb;
+
+  /* Typography Scale */
+  --font-display: 'Barlow Condensed', 'Bebas Neue', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', 'Fira Code', monospace;
+
+  /* Elevation */
+  --shadow-glow-yellow: 0 0 40px rgba(254, 192, 15, 0.25);
+  --shadow-card: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: rgba(255, 255, 255, 0.06);
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+}
+
+
+/* ---- Root Variables ---- */
+:root {
+  --background: #07111f;
+  --foreground: #f0f4f8;
+  color-scheme: dark;
+}
+
+/* ---- Body ---- */
+body {
+  color: var(--foreground);
+  background-color: var(--background);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+
+  background-image:
+    radial-gradient(ellipse 120% 60% at 0% 0%, rgba(254, 192, 15, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 80% at 100% 100%, rgba(0, 68, 122, 0.15) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 50% 30%, rgba(0, 48, 87, 0.2) 0%, transparent 60%);
+  background-attachment: fixed;
+}
+
+/* ---- Font Utilities ---- */
+.font-display {
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+}
+
+.font-body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+.font-mono {
+  font-family: 'DM Mono', monospace;
+}
+
+/* ---- Custom Scrollbar ---- */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(254, 192, 15, 0.3);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(254, 192, 15, 0.5);
+}
+
+/* ---- Range Input Styling ---- */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  height: 100%;
+}
+
+/* ---- Selection ---- */
+::selection {
+  background-color: rgba(254, 192, 15, 0.2);
+  color: #fec00f;
+}
+
+/* ---- Brand utilities ---- */
+.text-brand-yellow {
+  color: var(--color-brand-yellow);
+}
+
+.bg-brand-yellow {
+  background-color: var(--color-brand-yellow);
+}
+
+.border-brand-yellow {
+  border-color: var(--color-brand-yellow);
+}
+
+.text-lt-dark {
+  color: var(--color-lt-dark);
+}
+
+.bg-lt-dark {
+  background-color: var(--color-lt-dark);
+}
+
+/* ---- Animate utilities ---- */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(254, 192, 15, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2.5s infinite;
+}
+
+/* ---- Glow hover utility ---- */
+.glow-yellow:hover {
+  box-shadow: var(--shadow-glow-yellow);
+}
+
+/* ---- Grid lines background texture ---- */
+.grid-texture {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+}

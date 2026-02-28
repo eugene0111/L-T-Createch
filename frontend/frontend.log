@@ -1,0 +1,38 @@
+
+> frontend@0.1.0 dev
+> next dev
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/eugenesam/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /Users/eugenesam/Desktop/L&T/CreaTech_Submission/frontend/package-lock.json
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.29.20:3000
+
+✓ Starting...
+✓ Ready in 844ms
+⨯ ./Desktop/L&T/CreaTech_Submission/frontend/src/app/globals.css:1255:8
+Parsing CSS source code failed
+[0m [90m 1253 |[39m   }
+ [90m 1254 |[39m }
+[31m[1m>[22m[39m[90m 1255 |[39m [33m@[39m[36mimport[39m url([32m'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400;500&display=swap'[39m)[33m;[39m
+ [90m      |[39m        [31m[1m^[22m[39m
+ [90m 1256 |[39m [33m@[39mlayer base {
+ [90m 1257 |[39m   [33m*[39m[33m,[39m
+ [90m 1258 |[39m   [33m:[39m[33m:[39mafter[33m,[39m[0m
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Import trace:
+  Client Component Browser:
+    ./Desktop/L&T/CreaTech_Submission/frontend/src/app/globals.css [Client Component Browser]
+    ./Desktop/L&T/CreaTech_Submission/frontend/src/app/layout.tsx [Server Component]
+
+
+ GET / 500 in 570ms (compile: 469ms, render: 101ms)
+✓ Compiled in 825ms
+ GET / 200 in 442ms (compile: 223ms, render: 220ms)

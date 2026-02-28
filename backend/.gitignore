@@ -1,0 +1,17 @@
+# Datasets
+datasets    
+
+# Logs
+*.log
+
+# Env
+new_venv/
+venv/
+
+# Data files
+*.csv
+*.xlsx
+*.parquet
+
+# Secrets
+.env
