@@ -149,6 +149,40 @@ export default function Home() {
     }
   };
 
+  const [downloadingReport, setDownloadingReport] = useState<boolean>(false);
+  const handleDownloadPDF = async () => {
+    if (!result) return;
+    setDownloadingReport(true);
+    try {
+      const res = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          metrics: result.metrics,
+          insight: result.insight
+        }),
+      });
+      
+      if (!res.ok) throw new Error("Failed to generate PDF.");
+      
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "LT_Precast_Optimization_Report.pdf";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err: any) {
+      console.error(err);
+      setError("Failed to download executive report.");
+    } finally {
+      setDownloadingReport(false);
+    }
+  };
+
+
   return (
     <div className="min-h-screen bg-lt-dark text-white overflow-x-hidden font-body">
 
@@ -575,6 +609,42 @@ export default function Home() {
                 </div>
               </motion.div>
             </div>
+
+            {/* Actions Row */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              className="flex justify-end mt-8"
+            >
+              <button
+                onClick={handleDownloadPDF}
+                disabled={downloadingReport}
+                className={`flex items-center gap-3 px-6 py-4 rounded-xl border font-display font-semibold transition-all ${
+                  downloadingReport 
+                  ? "bg-white/5 border-white/10 text-white/40 cursor-wait" 
+                  : "bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20 active:scale-95"
+                }`}
+              >
+                {downloadingReport ? (
+                  <>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="w-5 h-5 border-2 border-white/20 border-t-white/60 rounded-full"
+                    />
+                    Generating PDF...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Generate Executive Report (PDF)
+                  </>
+                )}
+              </button>
+            </motion.div>
           </motion.section>
         )}
       </AnimatePresence>

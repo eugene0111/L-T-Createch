@@ -6,3 +6,4 @@ new_venv
 venv
 dist
 build
+../frontend
