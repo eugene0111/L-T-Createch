@@ -1,108 +1,22 @@
 import os
 import pandas as pd
-import numpy as np
-from xgboost import XGBRegressor
-from sklearn.multioutput import MultiOutputRegressor
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
 import joblib
 
-DATASET_DIR = "datasets"
+# Load models into memory once at startup
+MODEL_PATH = 'precast_multi_model.pkl'
+FEATURES_PATH = 'model_features.pkl'
 
-def build_model():
-    print("Loading empirical datasets and building the Unified Master Dataset...")
-    
-    # 1. Load actual concrete data where possible (e.g. concrete.csv)
-    # The user downloaded comprehensive datasets for this. We'll join what we can and synthesize the missing columns
-    concrete_file = os.path.join(DATASET_DIR, "concrete.csv")
-    
-    # 2. Build synthetic + merged pipeline to fulfill all 15 variables robustly
-    np.random.seed(42)
-    n_samples = 15000
-    
-    cement = np.random.uniform(200, 500, n_samples)
-    wc_ratio = np.random.uniform(0.35, 0.65, n_samples)
-    scm_pct = np.random.uniform(0, 40, n_samples)
-    ramp_rate = np.random.uniform(10, 30, n_samples)
-    hold_temp = np.random.uniform(30, 80, n_samples)
-    ambient_temp = np.random.uniform(15, 45, n_samples)
-    maturity_index = np.random.uniform(200, 800, n_samples)
-    mold_avail = np.random.uniform(60, 100, n_samples)
-    energy_tariff = np.random.uniform(5, 12, n_samples)
-
-    # Physics-based simulations where direct columns don't exist
-    base_strength = (cement / 100) * 0.5 - (wc_ratio * 2) + (hold_temp / 40) + np.random.normal(0, 0.2, n_samples)
-    strength_rate = np.clip(base_strength, 0.5, 5.0)
-
-    demould_time = np.clip(30 / strength_rate + np.random.normal(0, 1, n_samples), 10, 40)
-
-    cement_cost = cement * 7 * (1 - scm_pct/100) + (cement * scm_pct/100 * 3)
-    energy_kwh = (hold_temp - ambient_temp).clip(0) * 1.5 + (ramp_rate * 0.5)
-    energy_cost = energy_kwh * energy_tariff
-    mold_cost = demould_time * 50
-    cost_per_element = cement_cost + energy_cost + mold_cost + np.random.normal(0, 50, n_samples)
-
-    mold_util = np.clip((24 / demould_time) * (mold_avail / 100) * 100, 40, 98)
-
-    risk = np.clip((wc_ratio * 10) - (maturity_index / 200) + np.random.normal(0, 1, n_samples), 0, 15)
-
-    df = pd.DataFrame({
-        'Cement content': cement,
-        'W/C ratio': wc_ratio,
-        'SCM %': scm_pct,
-        'Ramp rate': ramp_rate,
-        'Hold temperature': hold_temp,
-        'Ambient temperature': ambient_temp,
-        'Maturity index': maturity_index,
-        'Mold availability': mold_avail,
-        'Energy tariff': energy_tariff,
-        # Targets
-        'Strength gain rate': strength_rate,
-        'Demould time': demould_time,
-        'Cost per element': cost_per_element,
-        'Energy consumption': energy_kwh,
-        'Mold utilization': mold_util,
-        'Risk of under-strength': risk
-    })
-    
-    features = [
-        'Cement content', 'W/C ratio', 'SCM %', 'Ramp rate', 'Hold temperature', 
-        'Ambient temperature', 'Maturity index', 'Mold availability', 'Energy tariff'
-    ]
-    targets = [
-        'Strength gain rate', 'Demould time', 'Cost per element', 
-        'Energy consumption', 'Mold utilization', 'Risk of under-strength'
-    ]
-
-    X = df[features]
-    y = df[targets]
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
-
-    print("Training Multi-Output XGBoost AI Engine...")
-    base_model = XGBRegressor(n_estimators=100, max_depth=6, learning_rate=0.1, random_state=42)
-    model = MultiOutputRegressor(base_model)
-    model.fit(X_train, y_train)
-
-    y_pred = model.predict(X_test)
-    mse = mean_squared_error(y_test, y_pred)
-    print(f"Model converged! Overall Test MSE: {mse:.4f}")
-
-    joblib.dump(model, 'precast_multi_model.pkl')
-    joblib.dump(features, 'model_features.pkl')
-    print("Model successfully deployed as precast_multi_model.pkl")
+if os.path.exists(MODEL_PATH) and os.path.exists(FEATURES_PATH):
+    _model = joblib.load(MODEL_PATH)
+    _features = joblib.load(FEATURES_PATH)
+else:
+    raise FileNotFoundError("Model or features PKL files not found. Ensure they exist for production!")
 
 def get_prediction(input_data):
-    if not os.path.exists('precast_multi_model.pkl'):
-        build_model()
-    
-    model = joblib.load('precast_multi_model.pkl')
-    features = joblib.load('model_features.pkl')
-
     df_in = pd.DataFrame([input_data])
-    df_in = df_in[features]
+    df_in = df_in[_features]
     
-    preds = model.predict(df_in)[0]
+    preds = _model.predict(df_in)[0]
 
     return {
         'Strength gain rate': round(preds[0], 2),
@@ -114,7 +28,6 @@ def get_prediction(input_data):
     }
 
 if __name__ == "__main__":
-    build_model()
     print("\n--- TEST PREDICTION LOGIC ---")
     test_input = {
         'Cement content': 400,
